@@ -11,7 +11,6 @@ public class PessoasOutputStream extends OutputStream {
     private OutputStream op;
     private Pessoa[] pessoas;
 
-    public PessoasOutputStream() {}
 
     public PessoasOutputStream(Pessoa[] p, OutputStream os) {
         this.pessoas = p;
@@ -34,10 +33,10 @@ public class PessoasOutputStream extends OutputStream {
                 String cpf = pessoa.getCpf();
                 byte idade = pessoa.getIdade();
 
-                opLocal.println(" tamanhoNomePessoa: "+tamanhoNomePessoa+ "\n"+
-                        " nomePessoa: "+nome+ "\n"+
-                        " cpf: "+cpf+ "\n"+
-                        " idade: "+idade);
+                opLocal.println("tamanhoNomePessoa: "+tamanhoNomePessoa+ "\n"+
+                        "nomePessoa: "+nome+ "\n"+
+                        "cpf: "+cpf+ "\n"+
+                        "idade: "+idade);
             }
         }
     }
@@ -45,11 +44,15 @@ public class PessoasOutputStream extends OutputStream {
     public void writeFile() {
         try{
             FileOutputStream arquivo =new FileOutputStream("D:\\Workspace\\Java\\sockets_e_stream\\src\\pessoas.txt");
-            String pessoa = info(pessoas[0].getNome(), pessoas[0].getCpf(), pessoas[0].getIdade());
-            byte[] pessoa_byte=pessoa.getBytes();//converting string into byte array
-            arquivo.write(pessoa_byte);
+
+            String pessoaInfo = info(pessoas[0].getNome(), pessoas[0].getCpf(), pessoas[0].getIdade());
+
+            byte[] pessoaInfoBytes=pessoaInfo.getBytes();
+
+            arquivo.write(pessoaInfoBytes);
             arquivo.close();
-            System.out.println("success...");
+            System.out.println("Salvo com sucesso!");
+
         } catch(Exception e){
             System.out.println(e);
         }
@@ -62,17 +65,22 @@ public class PessoasOutputStream extends OutputStream {
     }
 
     public void writeTCP() {
-        Socket s = null;
+        Socket socket = null;
+
         try {
             int serverPort = 7896;
-            s = new Socket("localhost", serverPort);
-            DataInputStream in = new DataInputStream(s.getInputStream());
-            DataOutputStream out = new DataOutputStream(s.getOutputStream());
+            socket = new Socket("localhost", serverPort);
+
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
             String envio = info(pessoas[0].getNome(), pessoas[0].getCpf(), pessoas[0].getIdade());
-            System.out.println("Sent: "+envio);
+            System.out.println("Sent:\n" + envio);
+
             out.writeUTF(envio); // UTF is a string encoding see Sn. 4.4
+
             String data = in.readUTF(); // read a line of data from the stream
-            System.out.println("Received: " + data);
+            System.out.println("Received:\n" + data);
         } catch (UnknownHostException e) {
             System.out.println("Socket:" + e.getMessage());
         } catch (EOFException e) {
@@ -80,9 +88,9 @@ public class PessoasOutputStream extends OutputStream {
         } catch (IOException e) {
             System.out.println("readline:" + e.getMessage());
         } finally {
-            if (s != null)
+            if (socket != null)
                 try {
-                    s.close();
+                    socket.close();
                 } catch (IOException e) {
                     System.out.println("close:" + e.getMessage());
                 }

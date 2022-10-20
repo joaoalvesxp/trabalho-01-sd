@@ -32,4 +32,9 @@ public class Pessoa {
     public void setIdade(byte idade) {
         this.idade = idade;
     }
+    @Override
+
+    public String toString(){
+        return String.format("Nome: " + getNome()  + "\n" + "CPF: " + getCpf() + "\n" + "Idade: " + getIdade());
+    }
 }

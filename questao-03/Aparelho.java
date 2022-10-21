@@ -4,11 +4,14 @@ public class Aparelho {
     private int quantidadeNoEstoque;
     private Double precoTotal;
 
-    public Aparelho(String nome, Double preço, int quantidadeNoEstoque) {
+    private boolean transferivel = false;
+
+    public Aparelho(String nome, Double preço, int quantidadeNoEstoque, boolean transferivel) {
         this.nome = nome;
         this.preço = preço;
         this.quantidadeNoEstoque = quantidadeNoEstoque;
         this.precoTotal = getPrecoTotal();
+        this.transferivel = transferivel;
     }
 
     public String getNome() {
@@ -43,6 +46,18 @@ public class Aparelho {
 
     public void setQuantidadeNoEstoque(int quantidadeNoEstoque) {
         this.quantidadeNoEstoque = quantidadeNoEstoque;
+    }
+
+    public Aparelho(boolean transferivel) {
+        this.transferivel = transferivel;
+    }
+
+    public boolean isTransferivel() {
+        return transferivel;
+    }
+
+    public void setTransferivel(boolean transferivel) {
+        this.transferivel = transferivel;
     }
 
     @Override

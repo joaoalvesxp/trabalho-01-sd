@@ -1,5 +1,13 @@
-public class TV extends Aparelho {
-    public TV(String nome, Double preço, int quantidadeNoEstoque) {
-        super(nome, preço, quantidadeNoEstoque);
+public class TV extends Aparelho implements Transferivel {
+    public TV(String nome, Double preço, int quantidadeNoEstoque, boolean transferivel) {
+        super(nome, preço, quantidadeNoEstoque, transferivel);
+    }
+
+    @Override
+    public boolean tranferivel(boolean podeSerTransferido) {
+        if (podeSerTransferido != true){
+            return false;
+        }
+        return true;
     }
 }

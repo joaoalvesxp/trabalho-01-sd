@@ -59,4 +59,8 @@ public class Deposito {
     public void setNomeDeposito(String nomeDeposito) {
         this.nomeDeposito = nomeDeposito;
     }
+
+    public void tranferirAparelho(Aparelho aparelho) {
+
+    }
 }

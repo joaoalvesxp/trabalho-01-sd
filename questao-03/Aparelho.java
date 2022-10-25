@@ -1,4 +1,6 @@
-public class Aparelho {
+import java.io.Serializable;
+
+public class Aparelho implements Serializable {
     private String nome;
     private Double preço;
     private int quantidadeNoEstoque;

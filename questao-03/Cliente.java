@@ -5,57 +5,174 @@ import java.io.FileOutputStream;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
-public class Cliente {
-    public static void main(String[] args) {
-        Deposito deposito = new Deposito("Deposito 1");
+public class Cliente implements  Serializable {
+    public static void main(String[] args) throws IOException {
+        Scanner sc = new Scanner(System.in);
 
-        TV tvSamsung = new TV("TV Samsung 4k",1550.60, 2, true);
-        tvSamsung.tranferivel(tvSamsung.isTransferivel());
-        if (tvSamsung.isTransferivel()) {
-            System.out.println("tv é");
-        }
-        Celular iphone = new Celular("IPhone X",2000.00,10, true);
-        tvSamsung.tranferivel(tvSamsung.isTransferivel());
-        if (iphone.isTransferivel()){
-            System.out.println("iphone é");
-        }
-        deposito.adicionarAparelho(tvSamsung);
-        deposito.adicionarAparelho(iphone);
-        deposito.listarAparelhos();
-        deposito.removerPorUnidade("IPhone X",2);
-        deposito.removerAparelho(iphone);
-        deposito.listarAparelhos();
+        System.out.println("MENU\n1) Adicionar Produto\n2) Remover Produto\n3) Mostrar Produtos\n4) Transferir Produto\n0) Sair");
+        int opcao = sc.nextInt();
 
-        ObjectOutputStream obj = new ObjectOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(obj);
-        out.writeObject(tvSamsung);
-        out.flush();
-        out.close();
+            switch (opcao) {
+                case 1:
+                    adicionar();
+                    break;
+                case 2:
+                    remover();
+                    break;
+                case 3:
+                    mostarProdutosNoDeposito();
+                    break;
+                case 4:
+                    break;
+                case 0:
+                    break;
+            }
 
+            sc.close();
+    }
+
+
+    private static void adicionar() {
+
+        Scanner scannerAdicionar = new Scanner(System.in);
+
+        int opcaoAdicionar;
+        String nome;
+        Double preco;
+        int quantidade;
+        boolean trasferivel = true;
+
+        System.out.println("Selecione a categoria:\n1) TVs\n2) Smartphones");
+        opcaoAdicionar = scannerAdicionar.nextInt();
+
+        ArrayList<TV> tvs = null;
+        ArrayList<Celular> celulares = null;
         ArrayList<Object> objetos = new ArrayList<>();
-        objetos.add(tvSamsung);
-        Empacotamento.gravarArquivoBinario(objetos,"objetos");
-        Desempacotamento.lerArquivoBinario("objetos");
+
+        scannerAdicionar = new Scanner(System.in);
+
+        if (opcaoAdicionar == 1) {
+            tvs = new ArrayList<>();
+
+                System.out.println("Nome: ");
+                nome = scannerAdicionar.nextLine();
 
 
-        /*Socket socket = null; // Socket Cliente
+                System.out.println("Preço: ");
+                preco = scannerAdicionar.nextDouble();
+
+
+                System.out.println("Quantidade: ");
+                quantidade = scannerAdicionar.nextInt();
+
+
+                System.out.println("Pode ser transferida?: 1 - Sim  2 - Não");
+                int opcaoDeTransferencia = scannerAdicionar.nextInt();
+
+                if (opcaoDeTransferencia == 1) {
+                    trasferivel = true;
+                } else if (opcaoDeTransferencia == 2){
+                    trasferivel = false;
+                }
+
+                else {
+                    System.out.println("Opção Inválida! Transferivel selecionado com Default: true");
+                }
+
+                tvs.add(new TV(nome, preco, quantidade, trasferivel));
+
+                System.out.println("Tv adicionada com sucesso!");
+
+            }
+
+           else if (opcaoAdicionar == 2) {
+                celulares = new ArrayList<>();
+
+                System.out.println("Adicionando um Celular\nNome: ");
+                nome = scannerAdicionar.nextLine();
+
+                System.out.println("Preço: ");
+                preco = scannerAdicionar.nextDouble();
+
+                System.out.println("Quantidade: ");
+                quantidade = scannerAdicionar.nextInt();
+
+                System.out.println("Pode ser transferida?: 1 - Sim  2 - Não");
+                int opcaoDeTransferencia = scannerAdicionar.nextInt();
+
+                if (opcaoDeTransferencia == 1) {
+                    trasferivel = true;
+                } else if (opcaoDeTransferencia == 2) {
+                    trasferivel = false;
+                }
+                else {
+                    System.out.println("Opção Inválida! Transferivel selecionado com Default: true");
+                }
+
+                celulares.add(new Celular(nome, preco, quantidade, trasferivel));
+
+                System.out.println("Celular adicionado com sucesso!");
+
+        } else {
+            System.out.println("Categoria não encontada! Selecione uma categoria existente");
+        }
+
+        if (tvs != null) {
+            for (int i = 0; i < (tvs.size()); i++) {
+                objetos.add(tvs.get(i));
+            }
+        }
+
+        if (celulares != null) {
+            for (int i = 0; i < (celulares.size()); i++) {
+                objetos.add(celulares.get(i));
+            }
+        }
+
+        empacotar(objetos);
+        scannerAdicionar.close();
+    }
+
+    private static void transferir() {
+
+    }
+
+    private static void remover() {
+        Scanner scannerRemover = new Scanner(System.in);
+
+        System.out.printf("Remover Produto\nDigite o nome do produto: ");
+        String nomeProdutoRemover = scannerRemover.nextLine();
+        ArrayList<Object> objetosDoDepositoOficial = Desempacotamento.lerArquivoBinario("deposito_principal.dat");
+        ArrayList<Aparelho> objetosDoDepositoOficialCast = (ArrayList<Aparelho>) (ArrayList<?>) objetosDoDepositoOficial;
+
+        for (int i = 0; i < objetosDoDepositoOficial.size(); i++) {
+            if (objetosDoDepositoOficialCast.get(i).getNome().equals(nomeProdutoRemover)) {
+                objetosDoDepositoOficialCast.remove(i);
+            }
+        }
+        ArrayList<Object> objetosDoDepositoOficialAtualizado = (ArrayList<Object>) (ArrayList<?>) objetosDoDepositoOficialCast;
+        Empacotamento.gravarArquivoBinario(objetosDoDepositoOficialAtualizado,"deposito_principal.dat");
+        empacotar(objetosDoDepositoOficialAtualizado);
+    }
+
+    private static void mostarProdutosNoDeposito() {
+        ArrayList<Object> objetosDoDepositoOficial = Desempacotamento.lerArquivoBinario("deposito_principal.dat");
+        objetosDoDepositoOficial.forEach((n) -> System.out.println(n));
+    }
+
+    private static void empacotar(ArrayList<Object> aparelhos) {
+        Socket socket = null; // Socket Cliente
 
         try {
             int serverPort = 7896; // Porta do Servidor
-
             socket = new Socket("localhost", serverPort);
 
-            DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
+            outStream.writeObject(aparelhos);
 
-            String envio = "";
-            System.out.println("Enviando:\n" + envio);
-
-            out.writeUTF(envio); // UTF is a string encoding see Sn. 4.4
-
-            String data = in.readUTF(); // read a line of data from the stream
-            System.out.println("Recebendo:\n" + data);
         } catch (UnknownHostException e) {
             System.out.println("Socket:" + e.getMessage());
         } catch (EOFException e) {
@@ -69,9 +186,9 @@ public class Cliente {
                 } catch (IOException e) {
                     System.out.println("close:" + e.getMessage());
                 }
-        }*/
+        }
 
     }
-
-
 }
+
+

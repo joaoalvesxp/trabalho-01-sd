@@ -1,5 +1,7 @@
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class Servidor {
     public static void main(String args[]) {
@@ -23,32 +25,33 @@ class Connection extends Thread {
     Socket clientSocket;
 
     public Connection(Socket aClientSocket) {
+        Deposito depositoPrincipal = new Deposito("Deposito Principal");
+        Deposito depositoSecundario = new Deposito("Deposito Secundario");
+        ArrayList<Object> objetos = new ArrayList<>();
         try {
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
-            out = new DataOutputStream(clientSocket.getOutputStream());
+            /*out = new DataOutputStream(clientSocket.getOutputStream());*/
+            System.out.println(in.readUTF());
+
+            ObjectInputStream inStream = new ObjectInputStream (clientSocket.getInputStream());
+            objetos = new ArrayList<> ((ArrayList<Object>) inStream.readObject());
+
+            for (int i = 0; i < (objetos.size()); i++) {
+                depositoPrincipal.adicionarAparelho((Aparelho) objetos.get(i));
+            }
+
+            depositoPrincipal.listarAparelhos();
+
+            Empacotamento.gravarArquivoBinario(objetos,"deposito_principal.dat");
+
+            inStream.close();
             this.start();
         } catch (IOException e) {
             System.out.println("Connection:" + e.getMessage());
+        } catch (Exception e) {
+            e.getStackTrace();
         }
     }
 
-    public void run() {
-        try { // an echo server
-
-            String data = in.readUTF(); // read a line of data from the stream
-            System.out.println(data);
-            out.writeUTF(data.toUpperCase());
-        } catch (EOFException e) {
-            System.out.println("EOF:" + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("readline:" + e.getMessage());
-        } finally {
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                /* close failed */}
-        }
-
-    }
 }
